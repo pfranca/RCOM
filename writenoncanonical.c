@@ -18,7 +18,8 @@ int main(int argc, char** argv)
 {
     int fd,c, res;
     struct termios oldtio,newtio;
-    char buf[255];
+    char bufw[255];
+	char bufr[255];
     int i, sum = 0, speed = 0;
     
     if ( (argc < 2) || 
@@ -52,7 +53,7 @@ int main(int argc, char** argv)
     newtio.c_lflag = 0;
 
     newtio.c_cc[VTIME]    = 0;   /* inter-character timer unused */
-    newtio.c_cc[VMIN]     = 5;   /* blocking read until 5 chars received */
+    newtio.c_cc[VMIN]     = 1;   /* blocking read until 1 chars received */
 
 
 
@@ -72,16 +73,19 @@ int main(int argc, char** argv)
 
     printf("New termios structure set\n");
 
+	bzero(bufw,255);
+	gets(bufw);
 
-
-    for (i = 0; i < 255; i++) {
+   /* for (i = 0; i < 255; i++) {
       buf[i] = 'a';
     }
     
-    /*testing*/
+    //testing
     buf[25] = '\n';
-    
-    res = write(fd,buf,255);   
+    */
+	size_t length  = strlen(bufw)+1;
+
+    res = write(fd,bufw,length);   
     printf("%d bytes written\n", res);
  
 
@@ -91,6 +95,15 @@ int main(int argc, char** argv)
   */
 
 
+	printf("li:\n");
+	while (STOP==FALSE) {       /* loop for input */
+      res = read(fd,bufr,1);  
+      bufr[res]=0;               /* so we can printf... */
+      printf(":%s:%d\n", bufr, res);
+     	 if (bufr[0]=='\0') STOP=TRUE;
+    }
+
+	sleep(3);
 
    
     if ( tcsetattr(fd,TCSANOW,&oldtio) == -1) {
