@@ -18,6 +18,7 @@ int main(int argc, char** argv)
     int fd,c, res;
     struct termios oldtio,newtio;
     char buf[255];
+    char str[255];
 
     if ( (argc < 2) || 
   	     ((strcmp("/dev/ttyS0", argv[1])!=0) && 
@@ -50,7 +51,7 @@ int main(int argc, char** argv)
     newtio.c_lflag = 0;
 
     newtio.c_cc[VTIME]    = 0;   /* inter-character timer unused */
-    newtio.c_cc[VMIN]     = 5;   /* blocking read until 5 chars received */
+    newtio.c_cc[VMIN]     = 1;   /* blocking read until 1 char received */
 
 
 
@@ -70,21 +71,29 @@ int main(int argc, char** argv)
 
     printf("New termios structure set\n");
 
-
+    int i = 0;
     while (STOP==FALSE) {       /* loop for input */
-      res = read(fd,buf,255);   /* returns after 5 chars have been input */
+      res = read(fd,buf,1);   /* returns after 1 char have been input */
       buf[res]=0;               /* so we can printf... */
-      printf(":%s:%d\n", buf, res);
-      if (buf[0]=='z') STOP=TRUE;
+      //printf(":%s:%d\n", buf, res);
+      str[i]=buf[0];
+      i++;
+      if (buf[0]=='\0') STOP=TRUE;
     }
+    //str[i+1] = '\0';
+    printf("%s\n", str);
 
+    sleep(2);
+
+    res = write(fd, str, i);
+    printf("%d", res);
 
 
   /* 
     O ciclo WHILE deve ser alterado de modo a respeitar o indicado no guião 
   */
 
-
+    sleep(2);
 
     tcsetattr(fd,TCSANOW,&oldtio);
     close(fd);
