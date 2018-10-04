@@ -1,0 +1,44 @@
+#define FLAG 0x7E
+#define A 0x03
+
+unsigned char SET[5];
+SET[0] = FLAG;
+
+SET[3] = SET[1] ^ SET[2];
+
+int ret = write(fd, SET, 5);
+
+
+char l;
+
+int state = 0;
+
+while (state <= 5) {
+ret = read(fd, &l, 1);
+
+switch(state) {
+    case 0:
+	if (l == FLAG) state = 1;
+	else state = 0;
+	break;
+    case 1:
+	if (l == A) state = 2;
+	else if (l == FLAG) state = 1;
+	else state = 0;
+	break;
+    case 2:
+	if (l == C) state = 3;
+	else if (l == FLAG) state = 1;
+	else state = 0;
+	break;
+    case 3:
+	if (l == A ^ C) state = 4;
+	else if (l == FLAG) state = 1;
+	else state = 0;
+	break;
+    case 4:
+	if (l == FLAG) state = 5;
+	else state = 0;
+	break;
+}
+
