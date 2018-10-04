@@ -11,13 +11,22 @@
 #define FALSE 0
 #define TRUE 1
 
+#define MSG_SIZE	5
+
+#define FLAG 	0x7E
+#define A		0x03
+#define SET		0x03
+#define UA		0x07
+
 volatile int STOP=FALSE;
 
 int main(int argc, char** argv)
 {
     int fd,c, res;
+	int state = -1;
     struct termios oldtio,newtio;
-    char buf[255];
+    unsigned char buf[MSG_SIZE];
+	unsigned char l;
 
     if ( (argc < 2) || 
   	     ((strcmp("/dev/ttyS0", argv[1])!=0) && 
@@ -70,6 +79,60 @@ int main(int argc, char** argv)
 
     printf("New termios structure set\n");
 
+	
+
+	while (STOP == FALSE) {
+		res = read(fd, &l, 1);
+		switch(state) {
+			case -1:
+				bzero(buf, sizeof(buf));
+				state = 0;
+				break;
+    		case 0:
+				if (l == FLAG) { state = 1; buf[0] = l; }
+				else state = -1;
+				break;
+    		case 1:
+				if (l == A) { state = 2; buf[1] = l; }
+				else if (l == FLAG) state = 1;
+				else state = -1;
+				break;
+    		case 2:
+				if (l == SET) { state = 3; buf[2] = l; }
+				else if (l == FLAG) state = 1;
+				else state = -1;
+				break;
+    		case 3:
+				if (l == A ^ SET) { state = 4; buf[3] = l; }
+				else if (l == FLAG) state = 1;
+				else state = -1;
+				break;
+    		case 4:
+				if (l == FLAG) { state = 5; buf[4] = l; }
+				else state = -1;
+				break;
+			case 5:
+				STOP = TRUE;
+				break;
+		}
+    	printf("%s\n", buf);
+	}
+
+	buf[0] = FLAG;
+	buf[1] = A;
+	buf[2] = UA;
+	buf[3] = A ^ UA;
+	buf[4] = FLAG;
+
+    printf("%s\n", buf);
+
+	res = write(fd, buf, 5);
+
+	
+
+	
+
+/*
     int i = 0;
     while(STOP == FALSE) {
 	res = read(fd,buf+i,1);
@@ -85,7 +148,7 @@ int main(int argc, char** argv)
 
     res = write(fd, buf, i);
     printf("%d", res);
-
+*/
 
   /* 
     O ciclo WHILE deve ser alterado de modo a respeitar o indicado no guião 

@@ -12,14 +12,23 @@
 #define FALSE 0
 #define TRUE 1
 
+#define MSG_SIZE	5
+
+#define FLAG 	0x7E
+#define A		0x03
+#define SET		0x03
+#define UA		0x07
+
 volatile int STOP=FALSE;
 
 int main(int argc, char** argv)
 {
     int fd,c, res;
+	int state = -1;
     struct termios oldtio,newtio;
-    char bufw[255];
-	char bufr[255];
+    unsigned char bufw[MSG_SIZE];
+	unsigned char bufr[MSG_SIZE];
+	unsigned char l;
     int i, sum = 0, speed = 0;
     
     if ( (argc < 2) || 
@@ -74,15 +83,22 @@ int main(int argc, char** argv)
     printf("New termios structure set\n");
 
 	bzero(bufw,255);
-	gets(bufw);
+	/*gets(bufw);
 
-   /* for (i = 0; i < 255; i++) {
+    for (i = 0; i < 255; i++) {
       buf[i] = 'a';
     }
     
     //testing
     buf[25] = '\n';
     */
+
+	bufw[0] = FLAG;
+	bufw[1] = A;
+	bufw[2] = SET;
+	bufw[3] = A ^ SET;
+	bufw[4] = FLAG;
+
 	size_t length  = strlen(bufw)+1;
 
     res = write(fd,bufw,length);   
@@ -94,14 +110,50 @@ int main(int argc, char** argv)
     o indicado no guião 
   */
 
+while (STOP == FALSE) {
+		res = read(fd, &l, 1);
+		switch(state) {
+			case -1:
+				bzero(buf, sizeof(buf));
+				state = 0;
+				break;
+    		case 0:
+				if (l == FLAG) { state = 1; buf[0] = l; }
+				else state = -1;
+				break;
+    		case 1:
+				if (l == A) { state = 2; buf[1] = l; }
+				else if (l == FLAG) state = 1;
+				else state = -1;
+				break;
+    		case 2:
+				if (l == UA) { state = 3; buf[2] = l; }
+				else if (l == FLAG) state = 1;
+				else state = -1;
+				break;
+    		case 3:
+				if (l == A ^ UA) { state = 4; buf[3] = l; }
+				else if (l == FLAG) state = 1;
+				else state = -1;
+				break;
+    		case 4:
+				if (l == FLAG) { state = 5; buf[4] = l; }
+				else state = -1;
+				break;
+			case 5:
+				STOP = TRUE;
+				break;
+		}
+    	printf("%s\n", bufr);
+	}
 
-	printf("li:\n");
-	while (STOP==FALSE) {       /* loop for input */
+	/*printf("li:\n");
+	while (STOP==FALSE) {       
       res = read(fd,bufr,1);  
-      bufr[res]=0;               /* so we can printf... */
+      bufr[res]=0;               
       printf(":%s:%d\n", bufr, res);
      	 if (bufr[0]=='\0') STOP=TRUE;
-    }
+    }*/
 
 	sleep(3);
 
