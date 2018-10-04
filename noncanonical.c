@@ -11,7 +11,7 @@
 #define FALSE 0
 #define TRUE 1
 
-#define MSG_SIZE	5
+#define MSG_SIZE	6
 
 #define FLAG 	0x7E
 #define A		0x03
@@ -19,6 +19,14 @@
 #define UA		0x07
 
 volatile int STOP=FALSE;
+
+	void printBuff(char *buff){
+    printf("\nPrinting buffer:");
+    int i = 0;
+      for (i=0; i<5;i++){
+        printf("%x", buff[i]);
+      }
+  }
 
 int main(int argc, char** argv)
 {
@@ -65,7 +73,7 @@ int main(int argc, char** argv)
 
   /* 
     VTIME e VMIN devem ser alterados de forma a proteger com um temporizador a 
-    leitura do(s) próximo(s) caracter(es)
+    leitura do(s) prï¿½ximo(s) caracter(es)
   */
 
 
@@ -83,31 +91,33 @@ int main(int argc, char** argv)
 
 	while (STOP == FALSE) {
 		res = read(fd, &l, 1);
+    printf("antes switch %d",l);
 		switch(state) {
 			case -1:
 				bzero(buf, sizeof(buf));
-				state = 0;
+        if (l == FLAG) { state = 1; buf[0] = l; }
+			  else	state = 0;
 				break;
-    		case 0:
+      case 0:
 				if (l == FLAG) { state = 1; buf[0] = l; }
 				else state = -1;
 				break;
-    		case 1:
+      case 1:
 				if (l == A) { state = 2; buf[1] = l; }
 				else if (l == FLAG) state = 1;
 				else state = -1;
 				break;
-    		case 2:
+      case 2:
 				if (l == SET) { state = 3; buf[2] = l; }
 				else if (l == FLAG) state = 1;
 				else state = -1;
 				break;
-    		case 3:
+      case 3:
 				if (l == A ^ SET) { state = 4; buf[3] = l; }
 				else if (l == FLAG) state = 1;
 				else state = -1;
 				break;
-    		case 4:
+      case 4:
 				if (l == FLAG) { state = 5; buf[4] = l; }
 				else state = -1;
 				break;
@@ -115,8 +125,9 @@ int main(int argc, char** argv)
 				STOP = TRUE;
 				break;
 		}
-    	printf("%s\n", buf);
-	}
+    	printf("cona %s \t %d\n", buf, state);
+      //printBuff(buf);
+  }
 
 	buf[0] = FLAG;
 	buf[1] = A;
@@ -125,10 +136,11 @@ int main(int argc, char** argv)
 	buf[4] = FLAG;
 
     printf("%s\n", buf);
+  //printBuff(buf);
 
 	res = write(fd, buf, 5);
 
-	
+
 
 	
 
@@ -151,7 +163,7 @@ int main(int argc, char** argv)
 */
 
   /* 
-    O ciclo WHILE deve ser alterado de modo a respeitar o indicado no guião 
+    O ciclo WHILE deve ser alterado de modo a respeitar o indicado no guiï¿½o 
   */
 
     sleep(2);
