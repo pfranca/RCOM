@@ -68,7 +68,7 @@ int main(int argc, char** argv)
 
   /* 
     VTIME e VMIN devem ser alterados de forma a proteger com um temporizador a 
-    leitura do(s) próximo(s) caracter(es)
+    leitura do(s) prï¿½ximo(s) caracter(es)
   */
 
 
@@ -99,52 +99,59 @@ int main(int argc, char** argv)
 	bufw[3] = A ^ SET;
 	bufw[4] = FLAG;
 
-	size_t length  = strlen(bufw)+1;
+	size_t length  = sizeof(bufw);
+
+    printf("oi\n");
+    printf("%d\n",bufw[0]);
+    printf("%d\n",bufw[1]);
+    printf("%d\n",bufw[2]);
+    printf("%d\n",bufw[3]);
+    printf("%d\n",bufw[4]);
 
     res = write(fd,bufw,length);   
     printf("%d bytes written\n", res);
  
 
   /* 
-    O ciclo FOR e as instruções seguintes devem ser alterados de modo a respeitar 
-    o indicado no guião 
+    O ciclo FOR e as instruï¿½ï¿½es seguintes devem ser alterados de modo a respeitar 
+    o indicado no guiï¿½o 
   */
 
 while (STOP == FALSE) {
 		res = read(fd, &l, 1);
 		switch(state) {
 			case -1:
-				bzero(buf, sizeof(buf));
+				bzero(bufw, sizeof(bufw));
 				state = 0;
 				break;
     		case 0:
-				if (l == FLAG) { state = 1; buf[0] = l; }
+				if (l == FLAG) { state = 1; bufw[0] = l; }
 				else state = -1;
 				break;
     		case 1:
-				if (l == A) { state = 2; buf[1] = l; }
+				if (l == A) { state = 2; bufw[1] = l; }
 				else if (l == FLAG) state = 1;
 				else state = -1;
 				break;
     		case 2:
-				if (l == UA) { state = 3; buf[2] = l; }
+				if (l == UA) { state = 3; bufw[2] = l; }
 				else if (l == FLAG) state = 1;
 				else state = -1;
 				break;
     		case 3:
-				if (l == A ^ UA) { state = 4; buf[3] = l; }
+				if (l == A ^ UA) { state = 4; bufw[3] = l; }
 				else if (l == FLAG) state = 1;
 				else state = -1;
 				break;
     		case 4:
-				if (l == FLAG) { state = 5; buf[4] = l; }
+				if (l == FLAG) { state = 5; bufw[4] = l; }
 				else state = -1;
 				break;
 			case 5:
 				STOP = TRUE;
 				break;
 		}
-    	printf("%s\n", bufr);
+    	printf("%s\n", bufw);
 	}
 
 	/*printf("li:\n");
