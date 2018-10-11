@@ -32,7 +32,7 @@ void printBuff(char *buff, int size){
 int main(int argc, char** argv)
 {
     int fd,c, res;
-	int state = -1;
+    int state = 0;
     struct termios oldtio,newtio;
     unsigned char buf[MSG_SIZE];
 	unsigned char l;
@@ -88,11 +88,9 @@ int main(int argc, char** argv)
 
     printf("New termios structure set\n");
 
-	
-
 	while (STOP == FALSE) {
 		res = read(fd, &l, 1);
-    printf("antes switch %d",l);
+    printf("\nchar:%02x state:%d\n",l, state);
 		switch(state) {
 			case -1:
 				bzero(buf, sizeof(buf));
@@ -119,12 +117,8 @@ int main(int argc, char** argv)
 				else state = -1;
 				break;
       case 4:
-				if (l == FLAG) { state = 5; buf[4] = l; }
+				if (l == FLAG) { state = 5; buf[4] = l; STOP = TRUE; printBuff(buf, 5);}
 				else state = -1;
-				break;
-			case 5:
-				STOP = TRUE;
-				printBuff(buf, 5);
 				break;
 		}
 
@@ -138,10 +132,11 @@ printf("sai do while");
 	buf[3] = A ^ UA;
 	buf[4] = FLAG;
 
-    printf("%s\n", buf);
-  //printBuff(buf);
+  printBuff(buf, 5);
 
 	res = write(fd, buf, 5);
+
+  printf("res=%d", res);
 
 
 

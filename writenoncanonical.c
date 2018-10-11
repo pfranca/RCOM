@@ -101,7 +101,7 @@ while (STOP == FALSE) {
 }
 
 int llopen(){
-	return (sendSET() || receiveACK());
+	return sendSET();
 }
 
 int main(int argc, char** argv)
