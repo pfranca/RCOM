@@ -20,13 +20,14 @@
 
 volatile int STOP=FALSE;
 
-	void printBuff(char *buff){
-    printf("\nPrinting buffer:");
+void printBuff(char *buff, int size){
+	printf("\nPrinting buffer: ");
     int i = 0;
-      for (i=0; i<5;i++){
-        printf("%x", buff[i]);
-      }
-  }
+      for (i=0; i<size;i++){
+        printf("%02x ", buff[i]);
+     }
+	printf("\n");
+}
 
 int main(int argc, char** argv)
 {
@@ -123,11 +124,13 @@ int main(int argc, char** argv)
 				break;
 			case 5:
 				STOP = TRUE;
+				printBuff(buf, 5);
 				break;
 		}
-    	printf("cona %s \t %d\n", buf, state);
-      //printBuff(buf);
+
   }
+
+printf("sai do while");
 
 	buf[0] = FLAG;
 	buf[1] = A;

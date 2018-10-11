@@ -19,6 +19,13 @@
 #define SET		0x03
 #define UA		0x07
 
+
+int fd,c, res;
+int state = -1;
+unsigned char l;
+unsigned char bufw[MSG_SIZE];
+unsigned char bufr[MSG_SIZE];
+
 volatile int STOP=FALSE;
 
 void printBuff(char *buff, int size){
@@ -99,12 +106,7 @@ int llopen(){
 
 int main(int argc, char** argv)
 {
-    int fd,c, res;
-	int state = -1;
     struct termios oldtio,newtio;
-    unsigned char bufw[MSG_SIZE];
-	unsigned char bufr[MSG_SIZE];
-	unsigned char l;
     int i, sum = 0, speed = 0;
     
     if ( (argc < 2) || 
