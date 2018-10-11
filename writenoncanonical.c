@@ -21,7 +21,7 @@
 
 
 int fd,c, res;
-int state = -1;
+int state = 0;
 unsigned char l;
 unsigned char bufw[MSG_SIZE];
 unsigned char bufr[MSG_SIZE];
@@ -58,13 +58,18 @@ int sendSET(){
 		return 0;
 }
 
+
+
 int receiveACK(){
+bzero(bufw, sizeof(bufw));
 while (STOP == FALSE) {
 		res = read(fd, &l, 1);
+		printf("\nchar:%02x state:%d", l, state);
 		switch(state) {
 			case -1:
 				bzero(bufw, sizeof(bufw));
-				state = 0;
+				if (l == FLAG) { state = 1; bufw[0] = l; }
+				else state = 0;
 				break;
     		case 0:
 				if (l == FLAG) { state = 1; bufw[0] = l; }
@@ -86,12 +91,8 @@ while (STOP == FALSE) {
 				else state = -1;
 				break;
     		case 4:
-				if (l == FLAG) { state = 5; bufw[4] = l; }
+				if (l == FLAG) { state = 5; bufw[4] = l; STOP = TRUE; printf("ACK received.\n");}
 				else state = -1;
-				break;
-			case 5:
-				STOP = TRUE;
-				printf("ACK received.\n");
 				break;
 		}
 	}
@@ -167,3 +168,4 @@ int main(int argc, char** argv)
     close(fd);
     return 0;
 }
+
