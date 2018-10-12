@@ -1,154 +1,10 @@
 /*Non-Canonical Input Processing*/
 
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <termios.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <string.h>
-
-#define BAUDRATE B38400
-#define MODEMDEVICE "/dev/ttyS1"
-#define _POSIX_SOURCE 1 /* POSIX compliant source */
-#define FALSE 0
-#define TRUE 1
-
-#define MSG_SIZE 5
-
-#define FLAG 0x7E
-#define A 0x03
-#define SET 0x03
-#define UA 0x07
-
-int fd, c, res;
-int state = 0;
-unsigned char l;
-unsigned char buf[MSG_SIZE];
-
-volatile int STOP = FALSE;
-
-void printBuffer(char *buff, int size)
-{
-	printf("\nPrinting buffer: ");
-	int i = 0;
-	for (i = 0; i < size; i++)
-	{
-		printf("%02x ", buff[i]);
-	}
-	printf("\n");
-}
-
-int sendSET()
-{
-	//bzero(buf, MSG_SIZE);
-	memset(buf, 0, MSG_SIZE);
-
-	buf[0] = FLAG;
-	buf[1] = A;
-	buf[2] = SET;
-	buf[3] = A ^ SET;
-	buf[4] = FLAG;
-
-	if (res = write(fd, buf, MSG_SIZE) != MSG_SIZE)
-	{
-		printf("Message not written.\n");
-		printf("%d bytes written\n", res);
-		return 1;
-	}
-	else
-	{
-		printBuffer(buf, MSG_SIZE);
-		return 0;
-	}
-}
-
-int receiveACK()
-{
-	//bzero(buf, MSG_SIZE);
-	memset(buf, 0, MSG_SIZE);
-
-	while (STOP == FALSE)
-	{
-		res = read(fd, &l, 1);
-		printf("\nchar:%02x state:%d", l, state);
-		switch (state)
-		{
-		case -1:
-			//bzero(buf, MSG_SIZE);
-			memset(buf, 0, MSG_SIZE);
-			if (l == FLAG)
-			{
-				state = 1;
-				buf[0] = l;
-			}
-			else
-				state = 0;
-			break;
-		case 0:
-			if (l == FLAG)
-			{
-				state = 1;
-				buf[0] = l;
-			}
-			else
-				state = -1;
-			break;
-		case 1:
-			if (l == A)
-			{
-				state = 2;
-				buf[1] = l;
-			}
-			else if (l == FLAG)
-				state = 1;
-			else
-				state = -1;
-			break;
-		case 2:
-			if (l == UA)
-			{
-				state = 3;
-				buf[2] = l;
-			}
-			else if (l == FLAG)
-				state = 1;
-			else
-				state = -1;
-			break;
-		case 3:
-			if (l == A ^ UA)
-			{
-				state = 4;
-				buf[3] = l;
-			}
-			else if (l == FLAG)
-				state = 1;
-			else
-				state = -1;
-			break;
-		case 4:
-			if (l == FLAG)
-			{
-				state = 5;
-				buf[4] = l;
-				STOP = TRUE;
-			}
-			else
-				state = -1;
-			break;
-		}
-	}
-
-	printf("Message received.\n");
-	printBuffer(buf, MSG_SIZE);
-	return 0;
-}
+#include "common.c"
 
 int llopen()
 {
-	return sendSET() || receiveACK();
+	return send(SET) || receive(UA);
 }
 
 int main(int argc, char **argv)
@@ -205,9 +61,9 @@ int main(int argc, char **argv)
 	printf("New termios structure set\n");
 
 	if (llopen())
-		printf("llopen() failed.\n");
+		printf("\nllopen() failed.\n");
 	else
-		printf("llopen() successful.\n");
+		printf("\nllopen() successful.\n");
 
 	sleep(3);
 
