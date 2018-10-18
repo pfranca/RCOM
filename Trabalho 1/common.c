@@ -25,7 +25,7 @@ void printBuffer(char *buff, int size) {
     printf("\n");
 }
 
-int send(int sig) {
+int send_su(int sig) {
 
     memset(buf, 0, MSG_SIZE);
 
@@ -46,7 +46,7 @@ int send(int sig) {
     }
 }
 
-int receive(int sig) {
+int receive_su(int sig) {
     // bzero(buf, MSG_SIZE);
     memset(buf, 0, MSG_SIZE);
     printf("\nEntering receiving loop\n");

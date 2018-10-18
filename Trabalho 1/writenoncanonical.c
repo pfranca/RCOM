@@ -3,8 +3,9 @@
 #include "common.c"
 
 int llopen();
-int send_data(char *data);
 int llwrite(char *filename);
+int llclose();
+int send_data(char *data);
 
 int main(int argc, char **argv) {
 
@@ -79,6 +80,27 @@ int main(int argc, char **argv) {
 
 int llopen() { return send(SET) || receive(UA); }
 
+int llwrite(char *filename) {
+
+    FILE *file;
+    file = fopen(filename, "r");
+    char buf2[DATA_SIZE];
+
+    while (!feof(file)) {
+        if (fread(buf2, DATA_SIZE, 1, file) != 1)
+            perror("fread");
+        else {
+            if (send_data(buf2)) {
+                printf("Failed to send data\n");
+                return 1;
+            }
+        }
+    }
+
+    printf("\n");
+    return 0;
+}
+
 int send_data(char *data) {
     // ns++;
     // ns%=2;
@@ -105,25 +127,4 @@ int send_data(char *data) {
     printBuffer(buf2, MSG_SIZE + DATA_SIZE + 1);
 
     return (res = write(fd, buf2, MSG_SIZE + DATA_SIZE + 1) != MSG_SIZE + DATA_SIZE + 1) || receive(UA);
-}
-
-int llwrite(char *filename) {
-
-    FILE *file;
-    file = fopen(filename, "r");
-    char buf2[DATA_SIZE];
-
-    while (!feof(file)) {
-        if (fread(buf2, DATA_SIZE, 1, file) != 1)
-            perror("fread");
-        else {
-            if (send_data(buf2)) {
-                printf("Failed to send data\n");
-                return 1;
-            }
-        }
-    }
-
-    printf("\n");
-    return 0;
 }

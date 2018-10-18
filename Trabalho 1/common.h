@@ -13,6 +13,14 @@
 #define SET 0x03
 #define UA 0x07
 
+#define A_R 0x01
+#define A_E 0x03
+#define C_SET 0x03
+#define C_UA 0x07
+#define C_DISC 0x0B
+#define ESC 0x7D
+
+
 struct applicationLayer {
     int fileDescriptor; /*Descritor correspondente à porta série*/
     int status;         /*TRANSMITTER | RECEIVER*/

@@ -3,8 +3,9 @@
 #include "common.c"
 
 int llopen();
-int receive_data(unsigned char *buf);
 int llread(char *filename);
+int llclose();
+int receive_data(unsigned char *buf);
 
 int main(int argc, char **argv) {
 
