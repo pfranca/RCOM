@@ -64,7 +64,8 @@ int main(int argc, char **argv)
 
 	if ((argc < 3) ||
 	    ((strcmp("/dev/ttyS0", argv[1]) != 0) &&
-	     (strcmp("/dev/ttyS1", argv[1]) != 0)))
+	     (strcmp("/dev/ttyS1", argv[1]) != 0) &&
+	     (strcmp("/dev/ttyS2", argv[1]) != 0)))
 	{
 		printf("Usage:\t./write SerialPort filename\nex:\t./write /dev/ttyS0 pinguim.gif\n");
 		exit(1);
