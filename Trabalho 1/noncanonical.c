@@ -7,12 +7,13 @@ int llopen()
 	return receive(SET) || send(UA);
 }
 
-int receive_data()
+int receive_data(unsigned char * buf)
 {
 	memset(buf, 0, MSG_SIZE+DATA_SIZE+1);
 	printf("\nEntering receiving loop\n");
 	STOP = FALSE;
 	state=0;
+	unsigned char k;
 	while (STOP == FALSE)
 	{
 		res = read(fd, &k, 1);
@@ -128,9 +129,14 @@ int receive_data()
 		}
 	}
 
-	printf("Message received:\t");
-	printf("%S", buf);
+	printf("Message received:\n");
 	printBuffer(buf, MSG_SIZE + DATA_SIZE +1);
+
+	
+	//strncpy(ret, buf, sizeof(buf));
+	//printBuffer(ret, MSG_SIZE + DATA_SIZE +1);
+
+
 	return 0;
 }
 
@@ -139,17 +145,18 @@ int llread(char* filename)
 {
 	FILE* file;
 	file = fopen(filename, "w");
-	//unsigned char datatmp[MSG_SIZE+DATA_SIZE+1];
+	unsigned char datatmp[MSG_SIZE+DATA_SIZE+1];
 	while(TRUE) {
-		receive_data();
-		/*fwrite(datatmp[4], 1,1,file);
+		receive_data(datatmp);
+		printBuffer(datatmp, MSG_SIZE + DATA_SIZE +1);
+		fwrite(datatmp[4], 1,1,file);
 		fwrite(datatmp[5], 1,1,file);
 		fwrite(datatmp[6], 1,1,file);
 		fwrite(datatmp[7], 1,1,file);
 		fwrite(datatmp[8], 1,1,file);
 		fwrite(datatmp[9], 1,1,file);
 		fwrite(datatmp[10], 1,1,file);
-		fwrite(datatmp[11], 1,1,file);*/
+		fwrite(datatmp[11], 1,1,file);
 		//printBuffer(buf, MSG_SIZE+DATA_SIZE+1);
 		send(UA);
 	}
@@ -162,7 +169,8 @@ int main(int argc, char **argv)
 
 	if ((argc < 3) ||
 	    ((strcmp("/dev/ttyS0", argv[1]) != 0) &&
-	     (strcmp("/dev/ttyS1", argv[1]) != 0)))
+	     (strcmp("/dev/ttyS1", argv[1]) != 0) &&
+	     (strcmp("/dev/ttyS2", argv[1]) != 0)))
 	{
 		printf("Usage:\t./write SerialPort filename\nex:\t./write /dev/ttyS0 pinguim.gif\n");
 		exit(1);
