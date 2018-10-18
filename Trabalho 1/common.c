@@ -23,6 +23,7 @@
 
 int fd, c, res;
 int state = 0;
+int ns = 1;
 unsigned char l;
 unsigned char buf[MSG_SIZE];
 
@@ -69,6 +70,8 @@ int receive(int sig)
 	//bzero(buf, MSG_SIZE);
 	memset(buf, 0, MSG_SIZE);
 	printf("\nEntering receiving loop\n");
+	state = 0;
+	STOP = FALSE;
 	while (STOP == FALSE)
 	{
 		res = read(fd, &l, 1);

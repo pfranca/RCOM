@@ -9,16 +9,19 @@ int llopen()
 
 int send_data(char* data)
 {
+	//ns++;
+	//ns%=2;
+	ns = 0;
 	char buf2[MSG_SIZE + DATA_SIZE + 1];
 	int i, xor;
 	memset(buf, 0, MSG_SIZE);
 	
-	printf("%s", data);
+	printf("%s\n", data);
 
 	buf2[0] = FLAG;
 	buf2[1] = A;
-	buf2[2] = 0;
-	buf2[3] = A ^ 0;
+	buf2[2] = ns;
+	buf2[3] = A ^ ns;
 
 	for(i = 0; i < DATA_SIZE; i++) {
 		buf2[i+4] = data[i];
@@ -28,7 +31,9 @@ int send_data(char* data)
 	buf2[12] = xor;
 	buf2[13] = FLAG;
 
-	return (res = write(fd, buf, MSG_SIZE+DATA_SIZE+1) != MSG_SIZE+DATA_SIZE+1) || receive(UA);
+	printBuffer(buf2, MSG_SIZE+DATA_SIZE+1);
+
+	return (res = write(fd, buf2, MSG_SIZE+DATA_SIZE+1) != MSG_SIZE+DATA_SIZE+1)||receive(UA);
 }
 
 int llwrite(char* filename)

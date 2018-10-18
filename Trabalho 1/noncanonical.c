@@ -11,113 +11,115 @@ int receive_data()
 {
 	memset(buf, 0, MSG_SIZE+DATA_SIZE+1);
 	printf("\nEntering receiving loop\n");
+	STOP = FALSE;
+	state=0;
 	while (STOP == FALSE)
 	{
-		res = read(fd, &l, 1);
-		printf("char:%02x state:%d\n", l, state);
+		res = read(fd, &k, 1);
+		printf("char:%02x state:%d \n", k, state);
 		switch (state)
 		{
 		case -1:
 			//bzero(buf, MSG_SIZE);
 			memset(buf, 0, MSG_SIZE);
-			if (l == FLAG)
+			if (k == FLAG)
 			{
 				state = 1;
-				buf[0] = l;
+				buf[0] = k;
 			}
 			else
 				state = 0;
 			break;
 		case 0:
-			if (l == FLAG)
+			if (k == FLAG)
 			{
 				state = 1;
-				buf[0] = l;
+				buf[0] = k;
 			}
 			else
 				state = -1;
 			break;
 		case 1:
-			if (l == A)
+			if (k == A)
 			{
 				state = 2;
-				buf[1] = l;
+				buf[1] = k;
 			}
-			else if (l == FLAG)
+			else if (k == FLAG)
 				state = 1;
 			else
 				state = -1;
 			break;
 		case 2:
-			if (l == 0)
+			if (k == 0)
 			{
 				state = 3;
-				buf[2] = l;
+				buf[2] = k;
 			}
-			else if (l == FLAG)
+			else if (k == FLAG)
 				state = 1;
 			else
 				state = -1;
 			break;
 		case 3:
-			if (l == A ^ 0)
+			if (k == A ^ 0)
 			{
 				state = 4;
-				buf[3] = l;
+				buf[3] = k;
 			}
-			else if (l == FLAG)
+			else if (k == FLAG)
 				state = 1;
 			else
 				state = -1;
 			break;
 		case 4:
 			state++;
-			buf[4] = l;
+			buf[4] = k;
 			break;
 		case 5:
 			state++;
-			buf[5] = l;
+			buf[5] = k;
 			break;
 		case 6:
 			state++;
-			buf[6] = l;
+			buf[6] = k;
 			break;
 		case 7:
 			state++;
-			buf[7] = l;
+			buf[7] = k;
 			break;
 		case 8:
 			state++;
-			buf[8] = l;
+			buf[8] = k;
 			break;
 		case 9:
 			state++;
-			buf[9] = l;
+			buf[9] = k;
 			break;
 		case 10:
 			state++;
-			buf[10] = l;
+			buf[10] = k;
 			break;
 		case 11:
 			state++;
-			buf[11] = l;
+			buf[11] = k;
 			break;
 		case 12:
-			if (l == buf[4]^buf[5]^buf[6]^buf[7]^buf[8]^buf[9]^buf[10]^buf[11])
+			if (k == buf[4]^buf[5]^buf[6]^buf[7]^buf[8]^buf[9]^buf[10]^buf[11])
 			{
 				state = 13;
-				buf[12] = l;
+				buf[12] = k;
 			}
-			else if (l == FLAG)
+			else if (k == FLAG)
 				state = 1;
 			else
 				state = -1;
 			break;
 		case 13:
-			if (l == FLAG)
+			if (k == FLAG)
 			{
 				state = 14;
-				buf[13] = l;
+				buf[13] = k;
 				STOP = TRUE;
 			}
 			else
@@ -127,7 +129,8 @@ int receive_data()
 	}
 
 	printf("Message received:\t");
-	printBuffer(buf, MSG_SIZE);
+	printf("%S", buf);
+	printBuffer(buf, MSG_SIZE + DATA_SIZE +1);
 	return 0;
 }
 
@@ -136,8 +139,19 @@ int llread(char* filename)
 {
 	FILE* file;
 	file = fopen(filename, "w");
+	//unsigned char datatmp[MSG_SIZE+DATA_SIZE+1];
 	while(TRUE) {
 		receive_data();
+		/*fwrite(datatmp[4], 1,1,file);
+		fwrite(datatmp[5], 1,1,file);
+		fwrite(datatmp[6], 1,1,file);
+		fwrite(datatmp[7], 1,1,file);
+		fwrite(datatmp[8], 1,1,file);
+		fwrite(datatmp[9], 1,1,file);
+		fwrite(datatmp[10], 1,1,file);
+		fwrite(datatmp[11], 1,1,file);*/
+		//printBuffer(buf, MSG_SIZE+DATA_SIZE+1);
+		send(UA);
 	}
 	return 0;
 }
