@@ -2,56 +2,9 @@
 
 #include "common.c"
 
-int llopen() { return send(SET) || receive(UA); }
-
-int send_data(char *data) {
-    // ns++;
-    // ns%=2;
-    ns = 0;
-    char buf2[MSG_SIZE + DATA_SIZE + 1];
-    int i, xor;
-    memset(buf, 0, MSG_SIZE);
-
-    printf("%s\n", data);
-
-    buf2[0] = FLAG;
-    buf2[1] = A;
-    buf2[2] = ns;
-    buf2[3] = A ^ ns;
-
-    for (i = 0; i < DATA_SIZE; i++) {
-        buf2[i + 4] = data[i];
-        xor ^= data[i];
-    }
-
-    buf2[12] = xor;
-    buf2[13] = FLAG;
-
-    printBuffer(buf2, MSG_SIZE + DATA_SIZE + 1);
-
-    return (res = write(fd, buf2, MSG_SIZE + DATA_SIZE + 1) != MSG_SIZE + DATA_SIZE + 1) || receive(UA);
-}
-
-int llwrite(char *filename) {
-
-    FILE *file;
-    file = fopen(filename, "r");
-    char buf2[DATA_SIZE];
-
-    while (!feof(file)) {
-        if (fread(buf2, DATA_SIZE, 1, file) != 1)
-            perror("fread");
-        else {
-            if (send_data(buf2)) {
-                printf("Failed to send data\n");
-                return 1;
-            }
-        }
-    }
-
-    printf("\n");
-    return 0;
-}
+int llopen();
+int send_data(char *data);
+int llwrite(char *filename);
 
 int main(int argc, char **argv) {
 
@@ -121,5 +74,56 @@ int main(int argc, char **argv) {
     }
 
     close(fd);
+    return 0;
+}
+
+int llopen() { return send(SET) || receive(UA); }
+
+int send_data(char *data) {
+    // ns++;
+    // ns%=2;
+    ns = 0;
+    char buf2[MSG_SIZE + DATA_SIZE + 1];
+    int i, xor;
+    memset(buf, 0, MSG_SIZE);
+
+    printf("%s\n", data);
+
+    buf2[0] = FLAG;
+    buf2[1] = A;
+    buf2[2] = ns;
+    buf2[3] = A ^ ns;
+
+    for (i = 0; i < DATA_SIZE; i++) {
+        buf2[i + 4] = data[i];
+        xor ^= data[i];
+    }
+
+    buf2[12] = xor;
+    buf2[13] = FLAG;
+
+    printBuffer(buf2, MSG_SIZE + DATA_SIZE + 1);
+
+    return (res = write(fd, buf2, MSG_SIZE + DATA_SIZE + 1) != MSG_SIZE + DATA_SIZE + 1) || receive(UA);
+}
+
+int llwrite(char *filename) {
+
+    FILE *file;
+    file = fopen(filename, "r");
+    char buf2[DATA_SIZE];
+
+    while (!feof(file)) {
+        if (fread(buf2, DATA_SIZE, 1, file) != 1)
+            perror("fread");
+        else {
+            if (send_data(buf2)) {
+                printf("Failed to send data\n");
+                return 1;
+            }
+        }
+    }
+
+    printf("\n");
     return 0;
 }
