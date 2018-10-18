@@ -14,6 +14,7 @@
 #define TRUE 1
 
 #define MSG_SIZE 5
+#define DATA_SIZE 8
 
 #define FLAG 0x7E
 #define A 0x03

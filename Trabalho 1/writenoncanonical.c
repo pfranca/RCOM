@@ -9,35 +9,35 @@ int llopen()
 
 int send_data(char* data)
 {
-	char buf2[MSG_SIZE + 8];
+	char buf2[MSG_SIZE + DATA_SIZE + 1];
+	int i, xor;
 	memset(buf, 0, MSG_SIZE);
-
+	
+	printf("%s", data);
 
 	buf2[0] = FLAG;
 	buf2[1] = A;
 	buf2[2] = 0;
 	buf2[3] = A ^ 0;
-	buf2[4] = data[0];
-	buf2[5] = data[1];
-	buf2[6] = data[2];
-	buf2[7] = data[3];
-	buf2[8] = data[4];
-	buf2[9] = data[5];
-	buf2[10] = data[6];
-	buf2[11] = data[7];
-	buf2[12] = FLAG;
-	//printf("%s\t\t%s\n", data, buf2);
 
-	return (res = write(fd, buf, MSG_SIZE+8) != MSG_SIZE+8);
+	for(i = 0; i < DATA_SIZE; i++) {
+		buf2[i+4] = data[i];
+		xor ^= data[i];
+	}
+	
+	buf2[12] = xor;
+	buf2[13] = FLAG;
+
+	return (res = write(fd, buf, MSG_SIZE+DATA_SIZE+1) != MSG_SIZE+DATA_SIZE+1) || receive(UA);
 }
 
 int llwrite(char* filename)
 {
 	FILE* file;
 	file = fopen(filename, "r");
-	char buf2[8];
+	char buf2[DATA_SIZE];
 	while(!feof(file)) {
-		if (fread(buf2, 8, 1, file) != 1)
+		if (fread(buf2, DATA_SIZE, 1, file) != 1)
    		 	perror("fread");
 		else {
 			if(send_data(buf2)) {
@@ -47,7 +47,7 @@ int llwrite(char* filename)
 		}
 	}
 	
-
+	printf("\n");
 	return 0;
 }
 
@@ -104,6 +104,8 @@ int main(int argc, char **argv)
 	}
 
 	printf("New termios structure set\n");
+
+	//llwrite(argv[2]);
 
 	if (llopen())
 		printf("\nllopen() failed.\n");
