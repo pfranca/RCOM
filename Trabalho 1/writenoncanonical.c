@@ -78,7 +78,7 @@ int main(int argc, char **argv) {
     return 0;
 }
 
-int llopen() { return send(SET) || receive(UA); }
+int llopen() { return send_su(SET) || receive_su(UA); }
 
 int llwrite(char *filename) {
 
@@ -126,5 +126,5 @@ int send_data(char *data) {
 
     printBuffer(buf2, MSG_SIZE + DATA_SIZE + 1);
 
-    return (res = write(fd, buf2, MSG_SIZE + DATA_SIZE + 1) != MSG_SIZE + DATA_SIZE + 1) || receive(UA);
+    return (res = write(fd, buf2, MSG_SIZE + DATA_SIZE + 1) != MSG_SIZE + DATA_SIZE + 1) || receive_su(UA);
 }

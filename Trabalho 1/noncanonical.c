@@ -78,7 +78,7 @@ int main(int argc, char **argv) {
     return 0;
 }
 
-int llopen() { return receive(SET) || send(UA); }
+int llopen() { return receive_su(SET) || send_su(UA); }
 
 int receive_data(unsigned char *buf) {
 
@@ -207,16 +207,16 @@ int llread(char *filename) {
     while (TRUE) {
         receive_data(datatmp);
         printBuffer(datatmp, MSG_SIZE + DATA_SIZE + 1);
-        fwrite(datatmp[4], 1, 1, file);
+        /*fwrite(datatmp[4], 1, 1, file);
         fwrite(datatmp[5], 1, 1, file);
         fwrite(datatmp[6], 1, 1, file);
         fwrite(datatmp[7], 1, 1, file);
         fwrite(datatmp[8], 1, 1, file);
         fwrite(datatmp[9], 1, 1, file);
         fwrite(datatmp[10], 1, 1, file);
-        fwrite(datatmp[11], 1, 1, file);
+        fwrite(datatmp[11], 1, 1, file);*/
         // printBuffer(buf, MSG_SIZE+DATA_SIZE+1);
-        send(UA);
+        send_su(UA);
     }
     return 0;
 }
