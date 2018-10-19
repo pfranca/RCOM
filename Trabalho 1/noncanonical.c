@@ -137,38 +137,10 @@ int receive_data(unsigned char *buf) {
             else
                 state = -1;
             break;
-        case 4:
-            state++;
-            buf[4] = k;
-            break;
-        case 5:
-            state++;
-            buf[5] = k;
-            break;
-        case 6:
-            state++;
-            buf[6] = k;
-            break;
-        case 7:
-            state++;
-            buf[7] = k;
-            break;
-        case 8:
-            state++;
-            buf[8] = k;
-            break;
-        case 9:
-            state++;
-            buf[9] = k;
-            break;
-        case 10:
-            state++;
-            buf[10] = k;
-            break;
-        case 11:
-            state++;
-            buf[11] = k;
-            break;
+		default:
+			buf[state] = k;
+			state++;
+			break;
         case 12:
             if (k == buf[4] ^ buf[5] ^ buf[6] ^ buf[7] ^ buf[8] ^ buf[9] ^ buf[10] ^ buf[11]) {
                 state = 13;
@@ -203,18 +175,17 @@ int llread(char *filename) {
     FILE *file;
     file = fopen(filename, "w");
     unsigned char datatmp[MSG_SIZE + DATA_SIZE + 1];
+	int i;
+
 
     while (TRUE) {
         receive_data(datatmp);
         printBuffer(datatmp, MSG_SIZE + DATA_SIZE + 1);
-        /*fwrite(datatmp[4], 1, 1, file);
-        fwrite(datatmp[5], 1, 1, file);
-        fwrite(datatmp[6], 1, 1, file);
-        fwrite(datatmp[7], 1, 1, file);
-        fwrite(datatmp[8], 1, 1, file);
-        fwrite(datatmp[9], 1, 1, file);
-        fwrite(datatmp[10], 1, 1, file);
-        fwrite(datatmp[11], 1, 1, file);*/
+		file = fopen(filename, "a");
+        for(i = 4; i < 11; i++) {
+			fprintf(file, "%c", datatmp[i]);
+		}
+		fclose(file);
         // printBuffer(buf, MSG_SIZE+DATA_SIZE+1);
         send_su(UA);
     }
