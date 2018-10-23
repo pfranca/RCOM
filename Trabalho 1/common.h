@@ -18,8 +18,10 @@
 #define C_SET 0x03
 #define C_UA 0x07
 #define C_DISC 0x0B
-#define ESC 0x7D
 
+#define ESC 0x7D
+#define O_FLAG 0x5E
+#define O_ESC 0x5D
 
 struct applicationLayer {
     int fileDescriptor; /*Descritor correspondente à porta série*/
