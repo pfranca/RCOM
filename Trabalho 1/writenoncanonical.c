@@ -55,16 +55,14 @@ int main(int argc, char **argv) {
 
     printf("New termios structure set\n");
 
-    // llwrite(argv[2]);
-
     if (llopen())
-        printf("\nllopen() failed.\n");
+        printf("llopen() failed.\n");
     else {
-        printf("\nllopen() successful.\n");
+        printf("llopen() successful.\n");
         if (llwrite(argv[2]))
-            printf("\nllwrite() failed.\n");
+            printf("llwrite() failed.\n");
         else
-            printf("\nllwrite() successful.\n");
+            printf("llwrite() successful.\n");
     }
 
     sleep(3);
@@ -109,7 +107,7 @@ int send_data(char *data) {
     int i, xor;
     memset(buf, 0, MSG_SIZE);
 
-    printf("%s\n", data);
+    // printf("%s\n", data);
 
     buf2[0] = FLAG;
     buf2[1] = A;
@@ -124,7 +122,7 @@ int send_data(char *data) {
     buf2[12] = xor;
     buf2[13] = FLAG;
 
-    printBuffer(buf2, MSG_SIZE + DATA_SIZE + 1);
+    printBuffer(buf2, 14);
 
     return (res = write(fd, buf2, MSG_SIZE + DATA_SIZE + 1) != MSG_SIZE + DATA_SIZE + 1) || receive_su(UA);
 }

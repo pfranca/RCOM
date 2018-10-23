@@ -62,13 +62,13 @@ int main(int argc, char **argv) {
     printf("New termios structure set\n");
 
     if (llopen())
-        printf("\nllopen() failed.\n");
+        printf("llopen() failed.\n");
     else {
-        printf("\nllopen() successful.\n");
+        printf("llopen() successful.\n");
         if (llread(argv[2]))
-            printf("\nllread() failed.\n");
+            printf("llread() failed.\n");
         else
-            printf("\nllread() successful.\n");
+            printf("llread() successful.\n");
     }
 
     sleep(2);
@@ -87,15 +87,15 @@ int llread(char *filename) {
     unsigned char datatmp[MSG_SIZE + DATA_SIZE + 1];
     int i;
 
+    printf("Entering receiving loop:\n");
+
     while (TRUE) {
         receive_data(datatmp);
-        printBuffer(datatmp, MSG_SIZE + DATA_SIZE + 1);
         file = fopen(filename, "a");
         for (i = 4; i < 11; i++) {
             fprintf(file, "%c", datatmp[i]);
         }
         fclose(file);
-        // printBuffer(buf, MSG_SIZE+DATA_SIZE+1);
         send_su(UA);
     }
     return 0;
@@ -104,19 +104,15 @@ int llread(char *filename) {
 int receive_data(unsigned char *buf) {
 
     memset(buf, 0, MSG_SIZE + DATA_SIZE + 1);
-    printf("\nEntering receiving loop\n");
+
     STOP = FALSE;
     state = 0;
     unsigned char k;
 
     while (STOP == FALSE) {
-
         res = read(fd, &k, 1);
-        printf("char:%02x state:%d \n", k, state);
-
         switch (state) {
         case -1:
-            // bzero(buf, MSG_SIZE);
             memset(buf, 0, MSG_SIZE);
             if (k == FLAG) {
                 state = 1;
@@ -182,11 +178,6 @@ int receive_data(unsigned char *buf) {
         }
     }
 
-    printf("Message received:\n");
-    printBuffer(buf, MSG_SIZE + DATA_SIZE + 1);
-
-    // strncpy(ret, buf, sizeof(buf));
-    // printBuffer(ret, MSG_SIZE + DATA_SIZE +1);
-
+    printBuffer(buf, 14);
     return 0;
 }

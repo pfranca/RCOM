@@ -46,8 +46,8 @@ int send_su(int sig) {
         printf("Message not written. Bytes written: %d\n", res);
         return 1;
     } else {
-        printf("Message sent:\n");
-        printBuffer(su_buf, SU_MSG_SIZE);
+        // printf("Message sent:\n");
+        // printBuffer(su_buf, SU_MSG_SIZE);
         return 0;
     }
 }
@@ -55,14 +55,13 @@ int send_su(int sig) {
 int receive_su(int sig) {
 
     memset(buf, 0, MSG_SIZE);
-    printf("\nEntering receiving loop\n");
     state = 0;
     STOP = FALSE;
 
     while (STOP == FALSE) {
 
         res = read(fd, &l, 1);
-        printf("char:%02x state:%d\n", l, state);
+        // printf("char:%02x state:%d\n", l, state);
 
         switch (state) {
         case -1:
@@ -117,9 +116,7 @@ int receive_su(int sig) {
             break;
         }
     }
-
-    printf("Message received:\t");
-    printBuffer(buf, MSG_SIZE);
+    // printBuffer(buf, MSG_SIZE);
     return 0;
 }
 
