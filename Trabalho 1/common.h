@@ -4,9 +4,11 @@
 #define FALSE 0
 #define TRUE 1
 
+#define MAX_SIZE 256
 #define MSG_SIZE 5
+#define SU_MSG_SIZE 5
+#define I_MSG_SIZE (MAX_SIZE - SU_MSG_SIZE)
 #define DATA_SIZE 8
-#define MAX_SIZE 255
 
 #define FLAG 0x7E
 #define A 0x03

@@ -80,6 +80,27 @@ int main(int argc, char **argv) {
 
 int llopen() { return receive_su(SET) || send_su(UA); }
 
+int llread(char *filename) {
+
+    FILE *file;
+    file = fopen(filename, "w");
+    unsigned char datatmp[MSG_SIZE + DATA_SIZE + 1];
+    int i;
+
+    while (TRUE) {
+        receive_data(datatmp);
+        printBuffer(datatmp, MSG_SIZE + DATA_SIZE + 1);
+        file = fopen(filename, "a");
+        for (i = 4; i < 11; i++) {
+            fprintf(file, "%c", datatmp[i]);
+        }
+        fclose(file);
+        // printBuffer(buf, MSG_SIZE+DATA_SIZE+1);
+        send_su(UA);
+    }
+    return 0;
+}
+
 int receive_data(unsigned char *buf) {
 
     memset(buf, 0, MSG_SIZE + DATA_SIZE + 1);
@@ -137,10 +158,10 @@ int receive_data(unsigned char *buf) {
             else
                 state = -1;
             break;
-		default:
-			buf[state] = k;
-			state++;
-			break;
+        default:
+            buf[state] = k;
+            state++;
+            break;
         case 12:
             if (k == buf[4] ^ buf[5] ^ buf[6] ^ buf[7] ^ buf[8] ^ buf[9] ^ buf[10] ^ buf[11]) {
                 state = 13;
@@ -167,27 +188,5 @@ int receive_data(unsigned char *buf) {
     // strncpy(ret, buf, sizeof(buf));
     // printBuffer(ret, MSG_SIZE + DATA_SIZE +1);
 
-    return 0;
-}
-
-int llread(char *filename) {
-
-    FILE *file;
-    file = fopen(filename, "w");
-    unsigned char datatmp[MSG_SIZE + DATA_SIZE + 1];
-	int i;
-
-
-    while (TRUE) {
-        receive_data(datatmp);
-        printBuffer(datatmp, MSG_SIZE + DATA_SIZE + 1);
-		file = fopen(filename, "a");
-        for(i = 4; i < 11; i++) {
-			fprintf(file, "%c", datatmp[i]);
-		}
-		fclose(file);
-        // printBuffer(buf, MSG_SIZE+DATA_SIZE+1);
-        send_su(UA);
-    }
     return 0;
 }
