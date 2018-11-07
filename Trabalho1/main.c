@@ -12,7 +12,7 @@
 #include "al.c"
 
 //#define BAUDRATE B19200
-#define BAUDRATE B38400
+//#define BAUDRATE B38400
 //#define BAUDRATE B115200
 #define MODEMDEVICE "/dev/ttyS1"
 #define _POSIX_SOURCE 1 /* POSIX compliant source */
@@ -32,6 +32,25 @@ int main(int argc, char** argv) {
 		exit(1);
 	}
 
+	printf("Introduza a Baudrate (1: lento 2: normal 3: rapido).\n");
+	int baud = 0;
+	speed_t br;
+	scanf("%d", &baud);
+	switch(baud) {
+		case 1:
+			br = B19200;
+			break;
+		case 2:
+			br = B38400;
+			break;
+		case 3:
+			br = B115200;
+			break;
+		default:
+			br = B38400;
+			break; 
+	}
+
 	/*
 	 Open serial port device for reading and writing and not as controlling tty
 	 because we don't want to get killed if linenoise sends CTRL-C.
@@ -49,7 +68,7 @@ int main(int argc, char** argv) {
 	}
 
 	bzero(&newtio, sizeof(newtio));
-	newtio.c_cflag = BAUDRATE | CS8 | CLOCAL | CREAD;
+	newtio.c_cflag = br | CS8 | CLOCAL | CREAD;
 	newtio.c_iflag = IGNPAR;
 	newtio.c_oflag = 0;
 
@@ -77,7 +96,7 @@ int main(int argc, char** argv) {
 
 	int run = 1;
 	while(run){
-		printf("Prima:\n1 Para enviar.\n2 Para receber.\n3 Para mudar a Baudrate.\n");
+		printf("Prima:\n1 Para enviar.\n2 Para receber.\n");
 		int option;
 		scanf("%d", &option);
 
@@ -101,18 +120,6 @@ int main(int argc, char** argv) {
 			}
 			break;
 
-		case 3 :
-			printf("Intruduza a Baudrate (ex: \"38400\" para B38400).\n");
-			char *p, s[128];
-			int n;
-			while (fgets(s, sizeof(s), stdin)) {
-				n = strtol(s, &p, 10);
-				if (p == s || *p != '\n') {
-					printf("Please enter an integer: ");
-				} else break;
-			}
-			//checkBaurate(n);
-			break;
 		default :
 			printf("Opcao invalida:\n");
 			break;

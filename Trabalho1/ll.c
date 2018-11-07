@@ -352,8 +352,10 @@ int write_buffer(int fd, unsigned char * buffer, int length){
 				alarme = 0;
 			}
 
-			bzero(buf, 5);
-			bcc = 0x00;
+			
+				bzero(buf, 5);
+				bcc = 0x00;
+			
 
 			if(read_buffer(fd, buf, 5) == -1){
 				state = RESEND_STATE;
@@ -399,6 +401,7 @@ int write_buffer(int fd, unsigned char * buffer, int length){
 				alarm(0);
 				alarme = 1;
 				state = STOP_STATE;
+				conta = 0;
 			}
 			else {
 				printf("Incorrect Flag.\n");
@@ -552,6 +555,7 @@ int read_frame(int fd, unsigned char * buffer){
 					alarme = 1;
 					send_rr(fd, nr);
 					state = STOP_STATE;
+					conta = 0;
 				} else {
 					printf("Incorrect Flag.\n");
 					state = FAIL_STATE;
