@@ -18,6 +18,15 @@
 #define FALSE 0
 #define TRUE 1
 
+void splash() {
+system("clear");
+printf("\n\n\n\n\n");
+printf("\t\t\t  _ __ ___ ___  _ __ ___  \n");
+printf("\t\t\t | '__/ __/ _ \\| '_ ` _ \\ \n");
+printf("\t\t\t | | | (_| (_) | | | | | |\n");
+printf("\t\t\t |_|  \\___\\___/|_| |_| |_|\n\n\n\n");
+}
+
 int main(int argc, char** argv) {
 	int fd, c, res;
 	struct termios oldtio, newtio;
@@ -31,7 +40,9 @@ int main(int argc, char** argv) {
 		exit(1);
 	}
 
-	printf("Introduza a Baudrate (1: lento 2: normal 3: rapido).\n");
+	splash();
+	printf("Selecione uma Baudrate:\n  1. Lento\n  2. Normal\n  3. Rapido\n>");
+
 	int baud = 0;
 	speed_t br;
 	scanf("%d", &baud);
@@ -94,7 +105,8 @@ int main(int argc, char** argv) {
 
 	int run = 1;
 	while(run){
-		printf("Prima:\n1 Para enviar.\n2 Para receber.\n");
+		splash();
+		printf("Selecione um modo:\n  1. Enviar ficheiro\n  2. Receber ficheiro\n>");
 		int option;
 		scanf("%d", &option);
 

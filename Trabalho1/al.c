@@ -53,6 +53,23 @@ unsigned int convert_hex_to_int(unsigned char * buffer){
 	return value;
 }
 
+//ASCII progress bar
+void sent_progress(int current, int total) {
+	int progress_60 = (60 * current / total);
+	int progress_100 = (100 * current / total);
+	int i;
+	system("clear");
+	printf("\n\n\n\n\n\n\n      {");
+	for(i = 0; i < progress_60; i++) {
+		printf("▓");
+	}
+	for(i = progress_60; i < 60; i++) {
+		printf("░");
+	}
+	printf("} %d\%\n", progress_100);
+	printf("\t\t\t      (Sent: %d/%d)\n\n\n", current, total);
+}
+
 //calc number of packets we're gonna send
 int calc_packets(int length){
 	int size = 0;
@@ -108,7 +125,7 @@ int send_data_packets(int fd, unsigned char * buffer, int length){
 			} else {
 				return -1;
 			}
-			printf("Sent: %d/%d\n", i+1, size);
+			sent_progress(i+1, size);
 		}
 
 		//envio do ultimo pacote
@@ -126,7 +143,7 @@ int send_data_packets(int fd, unsigned char * buffer, int length){
 		} else {
 			return -1;
 		}
-		printf("Sent: %d/%d\n", i+1, size);
+		sent_progress(i+1, size);
 		return total;
 	}
 	return -1;
