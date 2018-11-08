@@ -126,6 +126,7 @@ int send_data_packets(int fd, unsigned char * buffer, int length){
 				return -1;
 			}
 			sent_progress(i+1, size);
+			//printf("Sent: %d/%d)\n", i+1, size);
 		}
 
 		//envio do ultimo pacote
@@ -144,6 +145,7 @@ int send_data_packets(int fd, unsigned char * buffer, int length){
 			return -1;
 		}
 		sent_progress(i+1, size);
+		//printf("Sent: %d/%d)\n", i+1, size);
 		return total;
 	}
 	return -1;
