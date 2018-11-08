@@ -1,7 +1,7 @@
 #include <math.h>
 #include "ll.c"
 
-#define IMG_SIZE 10968
+//#define IMG_SIZE 10968
 #define PACK_MAX_SIZE 4096
 
 #define TSIZE 0
@@ -28,6 +28,7 @@ double elapsed_time(){
 	return get_time() - starting_time;
 }
 
+//points to end of file, gets the valeu pointed with ftell, set puts the cursor back in the begining of the file
 int calc_file_size(FILE* file){
 	fseek(file, 0, SEEK_END);
 	int size = ftell(file);
@@ -52,11 +53,12 @@ unsigned int convert_hex_to_int(unsigned char * buffer){
 	return value;
 }
 
+//calc number of packets we're gonna send
 int calc_packets(int length){
 	int size = 0;
 	size = length/(MAX_SIZE-4);
 
-	if(length%(MAX_SIZE-4) != 0)
+	if(length%(MAX_SIZE-4) != 0) //adiciona mais um pacote ou conforme o tamanho (pode nao bater certo)
 		size++;
 
 	return size;
@@ -82,7 +84,7 @@ int send_data_packets(int fd, unsigned char * buffer, int length){
 	int j = 0;
 	int k = 0;
 
-	if(size == 1){
+	if(size == 1){ //se for so um pacote de dados nao temos a certeza do tamanho
 		i = 4;
 		for(j = 0; j < length; j++){
 			PK_D[i] = buffer[j];
@@ -109,10 +111,11 @@ int send_data_packets(int fd, unsigned char * buffer, int length){
 			printf("Sent: %d/%d\n", i+1, size);
 		}
 
+		//envio do ultimo pacote
 		PK_D[1] = num_seq;
 		num_seq++;
 
-		for(j = 4; j < (length%(MAX_SIZE-4))+4; j++){
+		for(j = 4; j < (length%(MAX_SIZE-4))+4; j++){ //ate nr bytes que faltam
 			PK_D[j] = buffer[k];
 			k++;
 		}
@@ -150,10 +153,11 @@ int send_file(int fd){
 
 	unsigned char value_name[PACK_MAX_SIZE];
 
-	int size_name = sprintf(value_name, "%s", path);
+	int size_name = sprintf(value_name, "%s", path); //tamanho nome
 
-	int pk_c_size = 1+2+size_size;
+	int pk_c_size = 1+2+size_size; //star+T+L+V(size_size)
 
+	//criar pacote controlo com tamanho e nome do ficheiro
 	unsigned char PK_C[pk_c_size];
 	bzero(PK_C, pk_c_size);
 	PK_C[0] = 0x02;
@@ -182,15 +186,15 @@ int send_file(int fd){
 
 	starting_time = get_time();
 
-	llwrite(fd, PK_C, pk_c_size);
+	llwrite(fd, PK_C, pk_c_size); //evia pacote controlo (start)
 
-	unsigned char buffer[size];
-	int res = read(fd_image, buffer, size);
+	unsigned char buffer[size]; 
+	int res = read(fd_image, buffer, size); // le imagem
 
-	send_data_packets(fd, buffer, size);
+	send_data_packets(fd, buffer, size); //envia pacotes de dados
 
-	PK_C[0] = 0x03;
-	llwrite(fd, PK_C, pk_c_size);
+	PK_C[0] = 0x03; // muda pacote de controlo start para end
+	llwrite(fd, PK_C, pk_c_size); //envia pacote de controlo (end)
 
 
 	printf("Total time:%-10.2f", elapsed_time());

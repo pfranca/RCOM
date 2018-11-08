@@ -42,7 +42,7 @@ void atende() {  // atende alarme
 }
 
 int write_su_frame(int fd, unsigned char * buffer){
-	return write(fd, buffer, 5);
+	return write(fd, buffer, 5); //tramas S ou U tem sempre tamanho 5 
 }
 int read_buffer(int fd, unsigned char * buffer, int length){
 
@@ -139,7 +139,7 @@ int llopen(int fd, int mode) {
 	TR_UA[3] = TR_UA[1] ^ TR_UA[2];
 	TR_UA[4] = FLAG;
 
-	if(mode == TRANSMITER) {
+	if(mode == TRANSMITER) { //envia trama set e le resposta do recetor
 		res = write_su_frame(fd, TR_SET);
 		//alarm(3);
 
@@ -184,7 +184,7 @@ int llopen(int fd, int mode) {
 			}
 		}
 		printf("Transmitter:\n");
-	} else if(mode == RECEIVER) {
+	} else if(mode == RECEIVER) { //le a trama de set que emissor enviou e envia UA em resposta
 		while (run) {
 			switch (state) {
 			case START_STATE:
@@ -308,12 +308,12 @@ int write_buffer(int fd, unsigned char * buffer, int length){
 	state = START_STATE;
 	int run = 1;
 	int res = 0;
-	unsigned char bcc2 = calc_bcc2(buffer, length);
+	unsigned char bcc2 = calc_bcc2(buffer, length); // calcular bcc relativo ao pacote ANTES do stuffing
 	int i = 0;
 
 	(void) signal(SIGALRM, atende);
 
-	unsigned char temp[length+1];
+	unsigned char temp[length+1]; // +1 para bcc2
 	bzero(temp, length+1);
 
 	for(i = 0; i < length; i++){
@@ -321,7 +321,7 @@ int write_buffer(int fd, unsigned char * buffer, int length){
 	}
 	temp[length] = bcc2;
 
-	int new_length = stuff(temp, length+1);
+	int new_length = stuff(temp, length+1); // +1 para flag final
 
 	unsigned char TR_I[5+new_length];
 	TR_I[0] = FLAG;
