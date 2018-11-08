@@ -66,7 +66,7 @@ void sent_progress(int current, int total) {
 	for(i = progress_60; i < 60; i++) {
 		printf("░");
 	}
-	printf("} %d\%\n", progress_100);
+	printf("} %d%% \n ", progress_100);
 	printf("\t\t\t      (Sent: %d/%d)\n\n\n", current, total);
 }
 
@@ -156,7 +156,7 @@ int send_file(int fd){
 	unsigned char path[PACK_MAX_SIZE];
 	bzero(path, PACK_MAX_SIZE);
 
-	printf("Introduza o nome do ficheiro:\n");
+	printf("\nIntroduza o nome do ficheiro:\n>");
 	scanf("%s", path);
 
 	FILE* file = fopen(path, "r");
